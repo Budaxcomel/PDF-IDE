@@ -10,7 +10,7 @@ from time import sleep
 import fitz
 import convertapi
 
-API_TOKEN = os.getenv("7524435222:AAGE7oDc4cP8_EJ-JA2x5XrcDOWHMDTy_Ls")
+API_TOKEN = os.getenv("API_TOKEN", "7524435222:AAGE7oDc4cP8_EJ-JA2x5XrcDOWHMDTy_Ls")
 bot = telebot.TeleBot(API_TOKEN, parse_mode="Markdown")
 
 if os.getenv("CONVERT_API") is not None:
