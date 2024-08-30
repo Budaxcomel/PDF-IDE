@@ -10,7 +10,8 @@ from time import sleep
 import fitz
 import convertapi
 
-API_TOKEN = os.getenv("API_TOKEN")
+# Gantikan 'YOUR_BOT_TOKEN_HERE' dengan token sebenar bot anda
+API_TOKEN = "7524435222:AAGE7oDc4cP8_EJ-JA2x5XrcDOWHMDTy_Ls"
 bot = telebot.TeleBot(API_TOKEN, parse_mode="Markdown")
 
 if os.getenv("CONVERT_API") is not None:
