@@ -2,7 +2,7 @@
 Python Oriented telegram bot to convert images to pdf
 
 ## DEMO
-[Click Here](https://telegram.me/PDFIDEbot)
+[Click Here](https://telegram.me/imgetopdfilebot)
 
 ## How to use ?
 
