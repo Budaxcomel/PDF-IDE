@@ -1,19 +1,17 @@
+```python
 #!/usr/bin/python
 import os
 import telebot
 from telebot import types
-from telebot.types import InputMediaPhoto
 from PIL import Image
 import shutil
 from time import sleep
-import fitz
-import convertapi
-import logging
 from pathlib import Path
+import logging
 
-# Define the API token here
-API_TOKEN = os.getenv("7530211139:AAEwnLhyuthBZY_TT-W00sGOZzJi7y8wTy0")
-CONVERT_API_KEY = os.getenv("CONVERT_API")
+# Define the API token and ConvertAPI key here
+API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")  # Make sure to set this environment variable
+CONVERT_API_KEY = os.getenv("CONVERT_API_KEY")  # Make sure to set this environment variable
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,10 +20,9 @@ logger = logging.getLogger(__name__)
 # Create the bot instance
 bot = telebot.TeleBot(API_TOKEN, parse_mode="Markdown")
 
-if CONVERT_API_KEY:
-    convertapi.api_secret = CONVERT_API_KEY
+# In-memory storage
+PDF = {}
 
-# Directories
 def get_user_dir(user_id):
     user_dir = Path(f"./{user_id}")
     user_dir.mkdir(exist_ok=True)
@@ -77,10 +74,6 @@ def feedback(message):
         bot.send_message(message.chat.id, feedbackMsg, disable_web_page_preview=True)
     except Exception as e:
         logger.error(f"Error in /feedback handler: {e}")
-
-# In-memory storage
-PDF = {}
-media = {}
 
 def handle_image(message):
     try:
@@ -155,8 +148,10 @@ def handle_document(message):
             pass
         
         else:
-            # Handle other supported files
-            pass
+            bot.send_message(
+                message.chat.id,
+                "Unsupported file type. Please send an image or a PDF.",
+            )
     
     except Exception as e:
         logger.error(f"Error handling document: {e}")
@@ -173,8 +168,10 @@ def cancel(message):
         shutil.rmtree(user_dir)
         bot.reply_to(message, "`Queue deleted Successfully..`")
         PDF.pop(message.chat.id, None)
-    except Exception as e:
+    except FileNotFoundError:
         bot.reply_to(message, "`No Queue found`")
+    except Exception as e:
+        bot.reply_to(message, "`An error occurred while deleting the queue.`")
         logger.error(f"Error in /cancel handler: {e}")
 
 @bot.message_handler(commands=["generate"])
@@ -198,7 +195,7 @@ def generate(message):
         bot.edit_message_text(
             chat_id=message.chat.id,
             text="`Uploading pdf..`",
-            message_id=gnrtMsgId.message_id,
+            message_id=message.message_id,
         )
         bot.send_chat_action(message.chat.id, "upload_document")
         
@@ -207,4 +204,14 @@ def generate(message):
         
         bot.edit_message_text(
             chat_id=message.chat.id,
-            text="`
+            text="`PDF generated and sent successfully!`",
+            message_id=message.message_id,
+        )
+        
+    except Exception as e:
+        logger.error(f"Error in /generate handler: {e}")
+        bot.reply_to(message, "`An error occurred while generating the PDF.`")
+
+# Polling
+bot.polling()
+```
